@@ -10,7 +10,7 @@ FLOWS_ROOT = os.path.join(os.path.dirname(__file__), "..", "flows")
 def test_tags(test_id):
     return ["argo_workflows_tests", test_id]
 
-
+@pytest.mark.argo_workflows
 def test_argo_helloflow(test_tags, test_id):
     deployer = Deployer(
         flow_file=os.path.join(FLOWS_ROOT, "helloflow.py")
@@ -26,7 +26,7 @@ def test_argo_helloflow(test_tags, test_id):
         # clean up.
         deployed_flow.delete()
 
-
+@pytest.mark.argo_workflows
 def test_argo_conda_flow(test_tags, test_id):
     deployer = Deployer(
         flow_file=os.path.join(FLOWS_ROOT, "condatest.py"), environment="conda"
@@ -42,7 +42,7 @@ def test_argo_conda_flow(test_tags, test_id):
         # clean up.
         deployed_flow.delete()
 
-
+@pytest.mark.argo_workflows
 def test_argo_pypi_flow(test_tags, test_id):
     deployer = Deployer(
         flow_file=os.path.join(FLOWS_ROOT, "pypitest.py"), environment="pypi"
@@ -58,7 +58,7 @@ def test_argo_pypi_flow(test_tags, test_id):
         # clean up.
         deployed_flow.delete()
 
-
+@pytest.mark.argo_workflows
 def test_argo_notifications(test_tags):
     deployer = Deployer(
         flow_file=os.path.join(FLOWS_ROOT, "helloflow.py")
