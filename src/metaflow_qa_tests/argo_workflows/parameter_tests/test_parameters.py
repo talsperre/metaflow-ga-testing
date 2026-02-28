@@ -9,6 +9,8 @@ from ..utils import (
 )
 import os
 
+pytestmark = pytest.mark.argo_workflows
+
 ROOTPATH = os.path.dirname(__file__)
 
 
