@@ -16,6 +16,7 @@ def test_tags(test_id):
     return ["argo_workflows_tests", "conditional_step_tests", test_id]
 
 
+@pytest.mark.argo_workflows
 @pytest.mark.parametrize(
     "filename",
     [
@@ -59,6 +60,7 @@ def test_conditional_flows(filename, test_tags, test_id):
             deployed_flow.delete()
 
 
+@pytest.mark.argo_workflows
 @pytest.mark.parametrize(
     "filename",
     [
