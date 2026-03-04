@@ -11,7 +11,16 @@ requires-python = ">=3.9"
 dependencies = [
     "metaflow",
     "pytest",
-    "pytest-xdist"
+    "pytest-xdist",
+    "pytest-timeout",
+    "pytest-rerunfailures"
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "local: tests that run against the local backend (no infrastructure)",
+    "kubernetes: tests that run steps on Kubernetes (requires dev stack)",
+    "argo_workflows: tests that deploy to Argo Workflows (requires dev stack + Argo)",
 ]
 
 [tool.setuptools.packages.find]

@@ -1,0 +1,125 @@
+name: Kubernetes & Argo Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled]
+
+#Cancel in-progress runs for the same branch/PR to save runner time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Kubernetes 
+  test-kubernetes:
+    # Always run on push to main; on PRs only when labelled "ok-to-test".
+    if: >-
+      github.event_name == 'push' ||
+      contains(github.event.pull_request.labels.*.name, 'ok-to-test')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v4
+
+      - name: Check out Netflix/metaflow (for metaflow-dev CLI)
+        uses: actions/checkout@v4
+        with:
+          repository: Netflix/metaflow
+          path: metaflow-repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Metaflow + test package + tox
+        run: |
+          pip install ./metaflow-repo kubernetes
+          pip install .
+          pip install tox
+
+      - name: Start dev stack
+        run: |
+          echo "Starting Metaflow dev stack (Minikube + Argo + MinIO)..."
+          MINIKUBE_CPUS=2 metaflow-dev all-up &
+          WAIT_TIMEOUT=600 metaflow-dev wait-until-ready
+          echo "Dev stack is ready."
+
+      - name: Run Kubernetes test (CI flow via CLI)
+        run: |
+          cat <<'EOF' | metaflow-dev shell
+          echo "=== Running CI helloflow on Kubernetes ==="
+          python src/metaflow_qa_tests/flows/ci_helloflow.py run --with kubernetes
+          echo "=== Kubernetes test passed ==="
+          EOF
+
+      - name: Run tox Kubernetes suite (CI subset)
+        run: |
+          cat <<'EOF' | metaflow-dev shell
+          echo "=== Running tox -e kubernetes (CI tests) ==="
+          tox -e kubernetes -- -k test_ci_kubernetes_helloflow --timeout=600
+          EOF
+
+      - name: Teardown dev stack
+        if: always()
+        run: metaflow-dev down
+
+  # Argo Workflows 
+  test-argo:
+    if: >-
+      github.event_name == 'push' ||
+      contains(github.event.pull_request.labels.*.name, 'ok-to-test')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v4
+
+      - name: Check out Netflix/metaflow (for metaflow-dev CLI)
+        uses: actions/checkout@v4
+        with:
+          repository: Netflix/metaflow
+          path: metaflow-repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Metaflow + test package + tox
+        run: |
+          pip install ./metaflow-repo kubernetes
+          pip install .
+          pip install tox
+
+      - name: Start dev stack
+        run: |
+          echo "Starting Metaflow dev stack (Minikube + Argo + MinIO)..."
+          MINIKUBE_CPUS=2 metaflow-dev all-up &
+          WAIT_TIMEOUT=600 metaflow-dev wait-until-ready
+          echo "Dev stack is ready."
+
+      - name: Run Argo Workflows test (CI flow via CLI)
+        run: |
+          cat <<'EOF' | metaflow-dev shell
+          echo "=== Deploying CI helloflow to Argo ==="
+          python src/metaflow_qa_tests/flows/ci_helloflow.py argo-workflows create
+          echo "=== Argo deploy test passed ==="
+          EOF
+
+      - name: Run tox Argo suite (CI subset)
+        run: |
+          cat <<'EOF' | metaflow-dev shell
+          echo "=== Running tox -e argo (CI tests) ==="
+          tox -e argo -- -k test_ci_argo_helloflow --timeout=600
+          EOF
+
+      - name: Teardown dev stack
+        if: always()
+        run: metaflow-dev down
