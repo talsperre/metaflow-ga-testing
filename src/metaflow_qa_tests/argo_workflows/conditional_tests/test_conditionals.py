@@ -36,6 +36,7 @@ def test_tags(test_id):
         "conditionalSkipFlow5.py",
     ],
 )
+@pytest.mark.argo_workflows
 def test_conditional_flows(filename, test_tags, test_id):
     deployed_flow = None
     try:
@@ -70,6 +71,7 @@ def test_conditional_flows(filename, test_tags, test_id):
         "nestedRecursiveConditional3.py",
     ],
 )
+@pytest.mark.argo_workflows
 def test_failing_conditional_flows(filename, test_tags, test_id):
     deployed_flow = None
     try:
