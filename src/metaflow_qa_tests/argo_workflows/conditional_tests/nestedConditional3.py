@@ -1,4 +1,4 @@
-from metaflow import step, FlowSpec, card, Parameter
+from metaflow import step, FlowSpec, card
 
 
 # A conditional branch in a foreach split

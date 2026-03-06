@@ -1,4 +1,4 @@
-from metaflow import step, FlowSpec, card, Parameter
+from metaflow import step, FlowSpec, Parameter
 
 
 # a recursive conditional inside a foreach, with a diamond pattern before the join (supported)

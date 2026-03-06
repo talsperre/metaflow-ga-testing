@@ -6,7 +6,6 @@ class CondaFlow(FlowSpec):
     @step
     def start(self):
         print("In start")
-        import pandas as pd
 
         self.next(self.a)
 
