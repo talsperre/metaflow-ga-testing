@@ -19,7 +19,7 @@ def test_tags(test_id):
 
 # TODO: Add coverage for dashed params and double-quoted strings!
 
-
+@pytest.mark.argo_workflows
 def test_events(test_tags, test_id):
     try:
         deployed_event_flow = (
@@ -60,7 +60,7 @@ def test_events(test_tags, test_id):
         deployed_trigger_flow.delete()
         deployed_event_flow.delete()
 
-
+@pytest.mark.argo_workflows
 def test_cron(test_tags, test_id):
     try:
         deployed_cron_flow = (
@@ -79,7 +79,7 @@ def test_cron(test_tags, test_id):
     finally:
         deployed_cron_flow.delete()
 
-
+@pytest.mark.argo_workflows
 def test_base_params(test_tags):
     try:
         deployed_flow = (
