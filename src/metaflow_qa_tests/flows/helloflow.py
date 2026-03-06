@@ -8,7 +8,7 @@ def verify_otel_init():
     if OTEL_ENDPOINT:
         print(f"METAFLOW_OTEL_ENDPOINT is set to {OTEL_ENDPOINT}")
     else:
-        print(f"METAFLOW_OTEL_ENDPOINT is not set. OTEL import was not attempted.")
+        print("METAFLOW_OTEL_ENDPOINT is not set. OTEL import was not attempted.")
 
 
 class HelloFlow(FlowSpec):

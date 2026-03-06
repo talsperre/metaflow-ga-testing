@@ -1,4 +1,4 @@
-from metaflow import step, FlowSpec, card, Parameter
+from metaflow import step, FlowSpec, Parameter
 
 
 # looping from any other step than the split-switch onto itself is not allowed.

@@ -4,7 +4,6 @@ from ..utils import (
     wait_for_run_to_finish,
     wait_for_run,
 )
-import io
 import os
 
 

@@ -1,5 +1,5 @@
 from baseflow import BaseParamsFlow
-from metaflow import trigger, step, Parameter, catch
+from metaflow import trigger, step, Parameter
 from payloads import EVENT_NAME, PAYLOADS
 
 

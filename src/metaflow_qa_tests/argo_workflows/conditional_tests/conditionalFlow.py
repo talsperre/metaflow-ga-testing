@@ -1,5 +1,4 @@
 from metaflow import step, FlowSpec, card, Parameter
-import os
 
 
 class ConditionalFlow(FlowSpec):
