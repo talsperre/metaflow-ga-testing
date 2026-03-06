@@ -13,6 +13,15 @@ dependencies = [
     "pytest",
     "pytest-xdist"
 ]
-
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+markers = [
+    "local: tests that run against the local backend (no infrastructure)",
+    "kubernetes: tests that run steps on Kubernetes (requires dev stack)",
+    "argo_workflows: tests that deploy to Argo Workflows (requires dev stack + Argo)",
+]
+filterwarnings = [
+    "error::pytest.PytestUnknownMarkWarning"
+]
 [tool.setuptools.packages.find]
 where = ["src"]
