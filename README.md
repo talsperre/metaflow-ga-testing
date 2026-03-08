@@ -18,7 +18,17 @@ pip install .
 pytest --pyargs metaflow_qa_tests -n auto
 ```
 
-There is no tox, no markers, no CI, no result reporting, and no way to test extensions.
+There is no tox, no markers, no CI, and no way to test extensions.
+
+### Cross-backend HTML report
+
+After running tests with tox (see Starter Tasks 1b), you can merge results into a single HTML report:
+
+```bash
+tox -e local && tox -e kubernetes && tox -e argo && python merge_results.py
+```
+
+This produces `test-results/report.html` — a matrix of tests × backends (local, kubernetes, argo) with pass/fail/skipped/not-run status and tracebacks for failures. Partial runs work: if you only ran `tox -e local`, the other columns show "—".
 
 ## Context
 
