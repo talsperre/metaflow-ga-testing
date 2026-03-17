@@ -4,6 +4,8 @@ from contextlib import redirect_stdout
 import io
 import os
 
+pytestmark = pytest.mark.argo_workflows
+
 ROOT = os.path.dirname(__file__)
 
 # TODO: Test the actual triggered behaviour as well. Omitted for now, as the deployment should be enough of a verification for this functionality.

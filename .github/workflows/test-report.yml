@@ -1,0 +1,63 @@
+name: Test Report
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  local-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install tox
+        run: pip install tox
+
+      - name: Run local tests and generate report
+        run: tox -e local
+        continue-on-error: true
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test-results/report.html
+
+      - name: Post markdown summary
+        if: always()
+        run: |
+          echo "## Metaflow QA Test Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          python -c "
+          import json, pathlib, sys
+          results_dir = pathlib.Path('test-results')
+          backends = ['local', 'kubernetes', 'argo']
+          data = {}
+          for b in backends:
+              f = results_dir / f'{b}.json'
+              if f.exists():
+                  data[b] = {t['nodeid'].split('::')[-1]: t['outcome'] for t in json.loads(f.read_text()).get('tests', [])}
+          
+          symbols = {'passed': '✓', 'failed': '✗', 'skipped': '~'}
+          all_tests = sorted(set(t for b in data.values() for t in b))
+          
+          print('| Test | ' + ' | '.join(backends) + ' |')
+          print('|------|' + '|'.join(['------'] * len(backends)) + '|')
+          for test in all_tests:
+              row = f'| {test} |'
+              for b in backends:
+                  outcome = data.get(b, {}).get(test, '—')
+                  row += ' ' + symbols.get(outcome, '—') + ' |'
+              print(row)
+          " >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Full HTML report available in artifacts above." >> $GITHUB_STEP_SUMMARY
