@@ -10,6 +10,7 @@ def test_tags(test_id):
     return ["kubernetes_tests", test_id]
 
 
+@pytest.mark.kubernetes
 def test_kubernetes_helloflow(test_tags):
     result = Runner(
         flow_file=os.path.join(FLOWS_ROOT, "helloflow.py"), decospecs=["kubernetes"]
@@ -18,6 +19,7 @@ def test_kubernetes_helloflow(test_tags):
     assert result.run.finished
 
 
+@pytest.mark.kubernetes
 def test_kubernetes_conda_flow(test_tags):
     result = Runner(
         flow_file=os.path.join(FLOWS_ROOT, "condatest.py"),
@@ -28,6 +30,7 @@ def test_kubernetes_conda_flow(test_tags):
     assert result.run.finished
 
 
+@pytest.mark.kubernetes
 def test_kubernetes_pypi_flow(test_tags):
     result = Runner(
         flow_file=os.path.join(FLOWS_ROOT, "pypitest.py"),
