@@ -1,7 +1,7 @@
 from metaflow import FlowSpec, step, pypi_base, kubernetes
 
 
-@pypi_base(packages={"pandas": "1.5.2"}, python="3.11")
+@pypi_base(packages={"pandas": "1.5.2", "numpy": "1.26.4"}, python="3.11")
 class MixedPyPIFlow(FlowSpec):
     @step
     def start(self):

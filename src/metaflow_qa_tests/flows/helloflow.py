@@ -18,17 +18,17 @@ class HelloFlow(FlowSpec):
 
         print("In A")
         print(vars(current))
-        self.var_1 = ["d", "u", "m", "m", "y"]
+        self.var_1 = ["d", "e", "m", "o"]
 
         self.next(self.b, foreach="var_1")
 
-    @resources(cpu=2, memory=1280)
+    @resources(cpu=0.1, memory=256)
     @step
     def b(self):
         print("In B")
         self.next(self.join)
 
-    @resources(memory=4096)
+    @resources(memory=256)
     @step
     def join(self, inputs):
         print("YO")
