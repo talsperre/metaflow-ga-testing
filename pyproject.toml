@@ -16,3 +16,20 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+markers = [
+    # Backend markers (where the test runs)
+    "local: runs against local backend via Runner API",
+    "kubernetes: runs steps as Kubernetes pods via Runner API",
+    "argo_workflows: deploys and triggers flows via Deployer API on Argo",
+
+    # Feature markers (what the test exercises)
+    "conda: requires conda or micromamba to be installed",
+    "pypi: requires pypi environment support",
+    "triggers: tests deploy-time trigger and event functionality",
+    "conditionals: tests conditional branching flows",
+    "parameters: tests parameter passing and trigger-on-finish",
+    "cron: tests cron-based scheduling",
+    "notifications: tests Argo workflow notification config",
+]

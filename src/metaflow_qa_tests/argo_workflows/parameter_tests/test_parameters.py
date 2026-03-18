@@ -9,6 +9,8 @@ from ..utils import (
 )
 import os
 
+pytestmark = pytest.mark.argo_workflows
+
 ROOTPATH = os.path.dirname(__file__)
 
 
@@ -20,6 +22,7 @@ def test_tags(test_id):
 # TODO: Add coverage for dashed params and double-quoted strings!
 
 
+@pytest.mark.triggers
 def test_events(test_tags, test_id):
     try:
         deployed_event_flow = (

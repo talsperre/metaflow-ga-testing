@@ -4,6 +4,8 @@ from contextlib import redirect_stdout
 import io
 import os
 
+pytestmark = pytest.mark.argo_workflows
+
 ROOT = os.path.dirname(__file__)
 
 # TODO: Test the actual triggered behaviour as well. Omitted for now, as the deployment should be enough of a verification for this functionality.
@@ -14,6 +16,7 @@ def test_tags(test_id):
     return ["argo_workflows_tests", "deploy_time_triggers_tests", test_id]
 
 
+@pytest.mark.triggers
 def test_successful_trigger_deployments(test_tags):
     # "filename, expected_trigger",
     filename_and_trigger = [
@@ -48,6 +51,7 @@ def test_successful_trigger_deployments(test_tags):
             deployer.delete()
 
 
+@pytest.mark.triggers
 def test_successful_trigger_on_finish_deployments(test_tags):
     # "filename, expected_trigger"
     filename_and_trigger = [
@@ -88,6 +92,7 @@ def test_successful_trigger_on_finish_deployments(test_tags):
             deployer.delete()
 
 
+@pytest.mark.triggers
 def test_expected_failing_trigger_deployments(test_tags):
     # "filename",
     filenames = [
