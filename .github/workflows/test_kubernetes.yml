@@ -1,0 +1,96 @@
+name: Kubernetes and Argo Workflow Tests
+on: 
+  push: 
+    branches: [main]
+  pull_request: 
+    branches: [main]
+jobs:
+  test-kubernetes:
+    runs-on: ubuntu-latest
+    strategy: 
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install tox and metaflow
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install tox metaflow
+
+      - name: Start dev stack
+        run: |
+          MINIKUBE_CPUS=2 SERVICES_OVERRIDE="metadata-service,argo-workflows,minio" metaflow-dev up &
+          WAIT_TIMEOUT=600 metaflow-dev wait-until-ready
+
+      - name: Check pods status
+        run: |
+          kubectl get pods -A
+
+      - name: Describe pods for failure
+        if: failure()
+        run: |
+          kubectl describe pods -A
+          
+      - name: Run tests
+        run: |
+          cat <<'EOF' | metaflow-dev shell
+          tox -e kubernetes
+          EOF
+
+      - name: Teardown
+        if: always()
+        run: metaflow-dev down
+
+  test-argo_workflows: 
+    runs-on: ubuntu-latest
+    strategy: 
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install tox and metaflow
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install tox metaflow
+
+      - name: Start dev stack
+        run: |
+          MINIKUBE_CPUS=2 SERVICES_OVERRIDE="metadata-service,argo-workflows,minio" metaflow-dev up  &
+          WAIT_TIMEOUT=600 metaflow-dev wait-until-ready
+
+      - name: Check pods status
+        run: |
+          kubectl get pods -A
+
+      - name: Describe pods
+        if: failure()
+        run: |
+          kubectl describe pods -A
+
+      - name: Run tests
+        run: |
+          cat <<'EOF' | metaflow-dev shell
+          tox -e argo
+          EOF
+
+      - name: Teardown
+        if: always()
+        run: metaflow-dev down
